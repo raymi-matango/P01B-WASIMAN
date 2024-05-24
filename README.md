@@ -20,4 +20,6 @@ Dependencias:
     npm i cookie-parser
     npm i cookie-session
     npm i cookie
-    
+Ejecutar: 
+    Antes del run deben cambiar el package.json dev "nodemon src/index.js"
+    npm run dev
