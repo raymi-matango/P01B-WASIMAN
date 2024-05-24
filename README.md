@@ -1,6 +1,5 @@
 ---
 
-##Backend para la gestión de viajes compartidos
+## BACKEND - Gestión de viajes compartidos
 
-###Instaladores
-
+### Instaladores:
