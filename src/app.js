@@ -1,8 +1,10 @@
 import express from "express";
 import session from "express-session";
-import usuariosRoutes from "./routes/admin/usuarios.routes.js";
 import { errorHandler } from './middlewares/errorHandler.js';
-
+//Importar rutas
+import usuariosRoutes from "./routes/admin/usuarios.routes.js";
+import viajesRoutes from "./routes/admin/viajes.routes.js"
+import reservasRoutes from "./routes/admin/reservas.routes.js";
 
 const app = express();
 app.use(express.json());
@@ -18,6 +20,10 @@ app.use(
 
 //API REST ADMIN
 app.use('/api/usuarios', usuariosRoutes);
+app.use('/api/viajes', viajesRoutes);
+app.use('/api/reservas', reservasRoutes);
+
+
 
 
 
