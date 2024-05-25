@@ -1,5 +1,5 @@
 import express from 'express';
-import { consultar, guardar, actualizar, eliminar, buscador } from '../controllers/usuariosController.js';
+import { consultar, guardar, actualizar, eliminar, buscador } from '../../controllers/admin/usuariosController.js';
 
 const router = express.Router();
 
@@ -10,3 +10,4 @@ router.delete('/:id', eliminar);
 router.get('/buscar/:nombre', buscador);
 
 export default router;
+//v1
