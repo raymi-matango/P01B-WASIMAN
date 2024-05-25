@@ -20,21 +20,22 @@ model Usuario {
 model Viaje {
   id                Int       @id @default(autoincrement())
   destino           String?
-  fechaSalida       String
-  horaSalida        String
-  puntosRecogida    String
-  capacidadAsientos Int
-  detalles          String?
-  disponible        Boolean
+  fechaSalida       String?  
+  horaSalida        String?
+  puntosRecogida    String?
+  capacidadAsientos Int?
+  detalles          String?  
+  disponible        Boolean  @default(true)
   reservas          Reserva[]
 }
 
 model Reserva {
-  id              Int      @id @default(autoincrement())
-  usuarioId       Int
-  viajeId         Int
-  fechaHoraReserva DateTime
-  estadoReserva   String
-  usuario         Usuario  @relation(fields: [usuarioId], references: [id])
-  viaje           Viaje    @relation(fields: [viajeId], references: [id])
+  id                Int      @id @default(autoincrement())
+  usuarioId         Int
+  viajeId           Int
+  fechaHoraReserva  DateTime
+  estadoReserva     String
+  cantidadAsientos  Int     // Nuevo campo para la cantidad de asientos reservados
+  usuario           Usuario @relation(fields: [usuarioId], references: [id])
+  viaje             Viaje   @relation(fields: [viajeId], references: [id])
 }
