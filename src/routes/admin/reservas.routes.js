@@ -16,5 +16,6 @@ router.put("/:id", actualizar);
 router.delete("/:id", eliminar);
 router.get("/usuario/:usuarioId", buscarPorUsuario);
 router.get("/viaje/:viajeId", buscarPorViaje);
+//v1
 
 export default router;
