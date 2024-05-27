@@ -1,8 +1,11 @@
 import express from "express";
 import session from "express-session";
-import autenticarRoutes from "./routes/autenticar.routes.js";
 import { errorHandler } from './middlewares/errorHandler.js';
 import dotenv from 'dotenv';
+//importar routes
+import autenticarRoutes from "./routes/autenticar.routes.js";
+import reservasRoutes from "./routes/reservas.routes.js"
+
 
 dotenv.config(); // Cargar variables de entorno
 
@@ -20,6 +23,7 @@ app.use(
 
 // API Rest Cliente
 app.use("/api/autenticar", autenticarRoutes);
+app.use("/api/reservas", reservasRoutes); 
 app.use(errorHandler);
 
 export default app;
