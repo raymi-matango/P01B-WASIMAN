@@ -23,7 +23,9 @@ export const crearReserva = async (req, res) => {
     }
 
     if (cantidadAsientos > viaje.capacidadAsientos) {
-      return res.status(400).json({ error: "No hay suficientes asientos disponibles" });
+      return res
+        .status(400)
+        .json({ error: "No hay suficientes asientos disponibles" });
     }
 
     // Crear la reserva
@@ -32,7 +34,7 @@ export const crearReserva = async (req, res) => {
         usuarioId,
         viajeId,
         fechaHoraReserva: new Date(),
-        estadoReserva: "pendiente",
+        estadoReserva: "confirmada",
         cantidadAsientos,
       },
     });
@@ -50,24 +52,6 @@ export const crearReserva = async (req, res) => {
   }
 };
 
-
-
-export const verDetalleReservas = async (req, res) => {
-  const usuarioId = req.session.userId;
-
-  try {
-    const reservas = await prisma.reserva.findMany({
-      where: { usuarioId },
-      include: { viaje: true }, // Incluir información del viaje
-    });
-
-    res.status(200).json({ reservas });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al obtener detalles de las reservas" });
-  }
-};
-
 export const cancelarReserva = async (req, res) => {
   const reservaId = parseInt(req.params.id);
   const usuarioId = req.session.userId;
@@ -75,16 +59,12 @@ export const cancelarReserva = async (req, res) => {
   try {
     const reserva = await prisma.reserva.findUnique({
       where: { id: reservaId },
-      include: { viaje: true }, // Incluir información del viaje
     });
 
     if (!reserva || reserva.usuarioId !== usuarioId) {
-      return res.status(404).json({ error: "Reserva no encontrada o no pertenece al usuario" });
-    }
-
-    // Verificar si el viaje está confirmado
-    if (reserva.viaje.estado === EstadoViaje.confirmado) {
-      return res.status(400).json({ error: "No puedes cancelar esta reserva porque el viaje ya está confirmado" });
+      return res
+        .status(404)
+        .json({ error: "Reserva no encontrada o no pertenece al usuario" });
     }
 
     // Eliminar la reserva
@@ -102,5 +82,23 @@ export const cancelarReserva = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al cancelar la reserva" });
+  }
+};
+
+export const verDetalleReservas = async (req, res) => {
+  const usuarioId = req.session.userId;
+
+  try {
+    const reservas = await prisma.reserva.findMany({
+      where: { usuarioId },
+      include: { viaje: true }, // Incluir información del viaje
+    });
+
+    res.status(200).json({ reservas });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Error al obtener detalles de las reservas" });
   }
 };
