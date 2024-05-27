@@ -1,17 +1,24 @@
 import express from "express";
 import session from "express-session";
-import { errorHandler } from './middlewares/errorHandler.js';
+import cors from "cors"; // Importar el middleware cors
 import dotenv from 'dotenv';
-//importar routes
+import { errorHandler } from './middlewares/errorHandler.js';
+// Importar routes
 import autenticarRoutes from "./routes/autenticar.routes.js";
-import reservasRoutes from "./routes/reservas.routes.js"
+import reservasRoutes from "./routes/reservas.routes.js";
 import viajesRoutes from "./routes/viajes.routes.js";
-
 
 dotenv.config(); // Cargar variables de entorno
 
 const app = express();
 app.use(express.json());
+
+// Configurar CORS
+app.use(cors({
+  origin: '*', // Permite todas las solicitudes de cualquier origen
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'] // Cabeceras permitidas
+}));
 
 app.use(
   session({
