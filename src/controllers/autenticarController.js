@@ -1,19 +1,17 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Registro de usuarios
 export const registrar = async (req, res) => {
   const { nombre, email, clave } = req.body;
 
-  // Validación de campos
   if (!nombre || !email || !clave) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
   }
 
   try {
-    // Verificar si el email ya está registrado
     const existingUser = await prisma.usuario.findUnique({
       where: { email },
     });
@@ -21,10 +19,8 @@ export const registrar = async (req, res) => {
       return res.status(400).json({ error: "El email ya está registrado" });
     }
 
-    // Cifrar la contraseña
     const hashedPassword = await bcrypt.hash(clave, 10);
 
-    // Crear el usuario en la base de datos
     await prisma.usuario.create({
       data: {
         nombre,
@@ -33,7 +29,6 @@ export const registrar = async (req, res) => {
       },
     });
 
-    // Responder con éxito
     res.status(201).json({ message: "Usuario registrado exitosamente" });
   } catch (error) {
     console.error(error);
@@ -41,17 +36,14 @@ export const registrar = async (req, res) => {
   }
 };
 
-// Inicio de sesión de usuarios
 export const login = async (req, res) => {
   const { email, clave } = req.body;
 
-  // Validación de campos
   if (!email || !clave) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
   }
 
   try {
-    // Buscar el usuario por email
     const usuario = await prisma.usuario.findUnique({
       where: { email },
     });
@@ -60,15 +52,14 @@ export const login = async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    // Verificar la contraseña
     const passwordMatch = await bcrypt.compare(clave, usuario.clave);
     if (!passwordMatch) {
       return res.status(401).json({ error: "Contraseña incorrecta" });
     }
 
-    // Establecer la sesión del usuario
-    req.session.userId = usuario.id;
-    res.status(200).json({ message: "Inicio de sesión exitoso" });
+    const token = jwt.sign({ userId: usuario.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(200).json({ token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al iniciar sesión" });

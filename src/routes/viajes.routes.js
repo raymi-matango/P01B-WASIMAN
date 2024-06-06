@@ -1,10 +1,10 @@
 import express from 'express';
 import { buscarViajes, listarViajes } from '../controllers/viajesController.js';
-import { estaAutenticado } from '../middlewares/autenticarMiddleware.js';
+import { verificarToken } from '../middlewares/verificarToken.js';
 
 const router = express.Router();
 
-router.get('/buscar', estaAutenticado, buscarViajes);
-router.get('/listar', estaAutenticado, listarViajes); // Nueva ruta para listar todos los viajes
+router.get('/buscar', verificarToken, buscarViajes);
+router.get('/listar', verificarToken, listarViajes); // Nueva ruta para listar todos los viajes
 
 export default router;
