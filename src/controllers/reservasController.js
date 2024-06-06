@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 export const crearReserva = async (req, res) => {
   const { viajeId, cantidadAsientos } = req.body;
-  const usuarioId = req.session.userId;
+  const usuarioId = req.userId;
 
   if (!viajeId || !cantidadAsientos) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
@@ -54,7 +54,7 @@ export const crearReserva = async (req, res) => {
 
 export const cancelarReserva = async (req, res) => {
   const reservaId = parseInt(req.params.id);
-  const usuarioId = req.session.userId;
+  const usuarioId = req.userId;
 
   try {
     const reserva = await prisma.reserva.findUnique({
@@ -86,7 +86,7 @@ export const cancelarReserva = async (req, res) => {
 };
 
 export const verDetalleReservas = async (req, res) => {
-  const usuarioId = req.session.userId;
+  const usuarioId = req.userId;
 
   try {
     const reservas = await prisma.reserva.findMany({
