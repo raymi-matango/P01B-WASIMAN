@@ -1,13 +1,14 @@
 import express from 'express';
-import { estaAutenticado } from '../middlewares/autenticarMiddleware.js';
+import { verificarToken } from '../middlewares/verificarToken.js';
+
 
 import { crearReserva, cancelarReserva, verDetalleReservas } from '../controllers/reservasController.js';
 
 
 const router = express.Router();
 
-router.post('/crear', estaAutenticado, crearReserva);
-router.delete('/cancelar/:id', estaAutenticado, cancelarReserva);
-router.get('/detalles', estaAutenticado, verDetalleReservas);
+router.post('/crear', verificarToken, crearReserva);
+router.delete('/cancelar/:id', verificarToken, cancelarReserva);
+router.get('/detalles', verificarToken, verDetalleReservas);
 
 export default router;
