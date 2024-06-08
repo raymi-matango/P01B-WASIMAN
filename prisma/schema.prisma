@@ -7,35 +7,54 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-
-
 model Usuario {
-  id       Int       @id @default(autoincrement())
-  nombre   String
-  email    String    @unique
-  clave    String
-  reservas Reserva[]
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  email     String    @unique
+  clave     String
+  telefono  String    @default("0999999999")
+  direccion String    @default("Quito")
+  reservas  Reserva[] 
+  comentarios Comentario[] 
 }
 
 model Viaje {
-  id                Int       @id @default(autoincrement())
-  destino           String?
-  fechaSalida       String?  
-  horaSalida        String?
-  puntosRecogida    String?
-  capacidadAsientos Int?
-  detalles          String?  
-  disponible        Boolean  @default(true)
-  reservas          Reserva[]
+  id          Int       @id @default(autoincrement())
+  origen      String?
+  destino     String?
+  fecha       String?
+  hora        String?
+  asiento     Int?
+  detalle     String?
+  disponible  Boolean   @default(true)
+  nombre      String?
+  facultad    String?
+  correo      String?
+  telefono    String?
+  foto        String?
+  reservas    Reserva[] 
+  comentarios Comentario[] 
 }
 
 model Reserva {
-  id                Int      @id @default(autoincrement())
-  usuarioId         Int
-  viajeId           Int
-  fechaHoraReserva  DateTime
-  estadoReserva     String
-  cantidadAsientos  Int     // Nuevo campo para la cantidad de asientos reservados
-  usuario           Usuario @relation(fields: [usuarioId], references: [id])
-  viaje             Viaje   @relation(fields: [viajeId], references: [id])
+  id          Int      @id @default(autoincrement())
+  usuarioId   Int
+  viajeId     Int
+  fecha       DateTime?
+  estado      String?
+  asiento     Int?     
+  ubicacion   String? 
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  viaje       Viaje    @relation(fields: [viajeId], references: [id])
+}
+
+model Comentario {
+  id            Int       @id @default(autoincrement())
+  usuarioId     Int
+  viajeId       Int
+  comentario    String?
+  calificacion  Int?
+  fecha         DateTime?
+  usuario       Usuario   @relation(fields: [usuarioId], references: [id])
+  viaje         Viaje     @relation(fields: [viajeId], references: [id])
 }

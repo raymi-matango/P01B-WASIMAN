@@ -1,18 +1,26 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+export const listarViajes = async (req, res) => {
+  try {
+    const viajes = await prisma.viaje.findMany();
+    res.status(200).json({ viajes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener la lista de viajes" });
+  }
+};
+
 export const buscarViajes = async (req, res) => {
-  const { destino, fechaSalida, horaSalida, puntosRecogida, capacidadAsientos, disponible } = req.query;
+  const { nombre, destino, fecha, hora } = req.query;
 
   try {
     const filtros = {};
-
+//equals puede que se cambie por la fecha
+    if (nombre) filtros.nombre = { contains: nombre };
     if (destino) filtros.destino = { contains: destino };
-    if (fechaSalida) filtros.fechaSalida = { equals: fechaSalida };
-    if (horaSalida) filtros.horaSalida = { equals: horaSalida };
-    if (puntosRecogida) filtros.puntosRecogida = { contains: puntosRecogida };
-    if (capacidadAsientos) filtros.capacidadAsientos = { gte: parseInt(capacidadAsientos) };
-    if (disponible !== undefined) filtros.disponible = disponible === 'true';
+    if (fecha) filtros.fecha = { contains: fecha };
+    if (hora) filtros.hora = { contains: hora };
 
     const viajes = await prisma.viaje.findMany({
       where: filtros,
@@ -22,15 +30,5 @@ export const buscarViajes = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al buscar viajes" });
-  }
-};
-
-export const listarViajes = async (req, res) => {
-  try {
-    const viajes = await prisma.viaje.findMany();
-    res.status(200).json({ viajes });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al obtener la lista de viajes" });
   }
 };
