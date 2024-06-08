@@ -32,6 +32,7 @@ model Viaje {
   correo      String?
   telefono    String?
   foto        String?
+  calificacion Float @default(1)
   reservas    Reserva[] 
   comentarios Comentario[] 
 }
