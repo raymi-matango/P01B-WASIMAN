@@ -2,10 +2,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const crearReserva = async (req, res) => {
-  const { viajeId, cantidadAsientos } = req.body;
+  const { viajeId, cantidadAsientos, ubicacion } = req.body;
   const usuarioId = req.userId;
 
-  if (!viajeId || !cantidadAsientos) {
+  if (!viajeId || !cantidadAsientos || !ubicacion) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
   }
 
@@ -22,7 +22,7 @@ export const crearReserva = async (req, res) => {
       return res.status(400).json({ error: "El viaje no está disponible" });
     }
 
-    if (cantidadAsientos > viaje.capacidadAsientos) {
+    if (cantidadAsientos > viaje.asiento) {
       return res
         .status(400)
         .json({ error: "No hay suficientes asientos disponibles" });
@@ -33,16 +33,17 @@ export const crearReserva = async (req, res) => {
       data: {
         usuarioId,
         viajeId,
-        fechaHoraReserva: new Date(),
-        estadoReserva: "pendiente",
-        cantidadAsientos,
+        fecha: new Date(), // Usamos la fecha actual
+        estado: "pendiente",
+        asiento: cantidadAsientos,
+        ubicacion: ubicacion,
       },
     });
 
     // Actualizar la capacidad de asientos disponibles en el viaje
     await prisma.viaje.update({
       where: { id: viajeId },
-      data: { capacidadAsientos: viaje.capacidadAsientos - cantidadAsientos },
+      data: { asiento: viaje.asiento - cantidadAsientos },
     });
 
     res.status(201).json({ message: "Reserva creada exitosamente", reserva });
@@ -59,6 +60,7 @@ export const cancelarReserva = async (req, res) => {
   try {
     const reserva = await prisma.reserva.findUnique({
       where: { id: reservaId },
+      include: { viaje: true }, // Incluimos información del viaje para obtener la cantidad de asientos reservados
     });
 
     if (!reserva || reserva.usuarioId !== usuarioId) {
@@ -75,7 +77,7 @@ export const cancelarReserva = async (req, res) => {
     // Devolver los asientos reservados al viaje
     await prisma.viaje.update({
       where: { id: reserva.viajeId },
-      data: { capacidadAsientos: { increment: reserva.cantidadAsientos } },
+      data: { asiento: reserva.viaje.asiento + reserva.asiento }, // Incrementamos los asientos disponibles
     });
 
     res.status(200).json({ message: "Reserva cancelada exitosamente" });
@@ -85,7 +87,7 @@ export const cancelarReserva = async (req, res) => {
   }
 };
 
-export const verDetalleReservas = async (req, res) => {
+/*export const verDetalleReservas = async (req, res) => {
   const usuarioId = req.userId;
 
   try {
@@ -101,4 +103,32 @@ export const verDetalleReservas = async (req, res) => {
       .status(500)
       .json({ error: "Error al obtener detalles de las reservas" });
   }
+};*/
+
+export const verDetalleReservas = async (req, res) => {
+  const usuarioId = req.userId;
+
+  try {
+    const reservas = await prisma.reserva.findMany({
+      where: { usuarioId },
+      include: { viaje: true }, // Incluir información del viaje
+    });
+
+    const detallesReservas = reservas.map(reserva => ({
+      id: reserva.id,
+      fecha: reserva.fecha,
+      estado: reserva.estado,
+      asiento: reserva.asiento,
+      ubicacion: reserva.ubicacion,
+      viaje: {
+        destino: reserva.viaje.destino,
+      },
+    }));
+
+    res.status(200).json({ reservas: detallesReservas });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener detalles de las reservas" });
+  }
 };
+
