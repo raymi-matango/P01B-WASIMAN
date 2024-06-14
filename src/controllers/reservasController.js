@@ -34,7 +34,7 @@ export const crearReserva = async (req, res) => {
         usuarioId,
         viajeId,
         fecha: new Date(), // Usamos la fecha actual
-        estado: "pendiente",
+        estado: "confirmado",
         asiento: cantidadAsientos,
         ubicacion: ubicacion,
       },
